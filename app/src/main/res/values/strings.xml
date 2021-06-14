@@ -4,4 +4,7 @@
     <string name="home">Home</string>
     <string name="profile">Profile</string>
     <string name="logo">Logo</string>
+    <string name="jl_ahuahu">Jl Ahuahu</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
