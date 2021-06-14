@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val navHostFragment = binding.hostFragment as NavHostFragment
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.host_fragment) as NavHostFragment
         binding.bottomNavigationView.setupWithNavController(navHostFragment.navController)
     }
 }
