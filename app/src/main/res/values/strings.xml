@@ -7,4 +7,14 @@
     <string name="jl_ahuahu">Jl Ahuahu</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="street">Street</string>
+    <string name="macet_biasa">Macet Biasa</string>
+    <string name="macet_sedang">Macet Sedang</string>
+    <string name="macet_total">Macet Total</string>
+    <string name="solution">Solution</string>
+    <string name="err_status_harus_diisi">Jenis kemacetan harus di isi!</string>
+    <string name="err_street_harus_diisi">Jalan harus di isi!</string>
+    <string name="err_solution_harus_diisi">Solusi harus di isi!</string>
+    <string name="success_write">Berhasil menambahkan data</string>
+    <string name="err_write">Gagal menambahkan data</string>
 </resources>

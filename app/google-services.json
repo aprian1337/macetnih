@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "553010757061",
+    "project_id": "macet-acc77",
+    "storage_bucket": "macet-acc77.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:553010757061:android:18c86f63c9ef8a16be1fac",
+        "android_client_info": {
+          "package_name": "com.macetnih.macetnih"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "553010757061-tb11ieune9u4tacqq7gnb2afa56g1i54.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAA1aU2deJQYR-18hOYOBz7Ne6ORml3zOg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "553010757061-tb11ieune9u4tacqq7gnb2afa56g1i54.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
