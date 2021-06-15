@@ -9,6 +9,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.FirebaseFirestore
 import com.macetnih.macetnih.R
 import com.macetnih.macetnih.databinding.FragmentCreateBinding
+import com.macetnih.macetnih.domain.model.Macet
 
 class CreateFragment : Fragment() {
     private var _binding: FragmentCreateBinding? = null
@@ -84,18 +85,21 @@ class CreateFragment : Fragment() {
     }
 
     private fun writeData(view: View, db: FirebaseFirestore) {
+        val id = "macet"+ (-1*System.currentTimeMillis()).toString()
         val macet = hashMapOf(
             "street" to street,
             "status" to status,
-            "solution" to solution
+            "solution" to solution,
+            "id" to id
         )
-        db.collection("macet").add(macet)
+        db.collection("macet").document(id).set(macet)
             .addOnSuccessListener {
                 showSnackbar(view, resources.getString(R.string.success_write))
             }
             .addOnFailureListener {
                 showSnackbar(view, resources.getString(R.string.err_write))
             }
+        clearInput()
     }
 
     private fun showLoading(state: Boolean){
@@ -103,6 +107,14 @@ class CreateFragment : Fragment() {
             binding.includeCreate.pbCreateUpdate.visibility = View.VISIBLE
         }else{
             binding.includeCreate.pbCreateUpdate.visibility = View.GONE
+        }
+    }
+
+    private fun clearInput(){
+        binding.includeCreate.apply {
+            rgMacet.clearCheck()
+            etStreet.text?.clear()
+            etSolution.text?.clear()
         }
     }
 }

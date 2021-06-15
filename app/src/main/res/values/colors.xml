@@ -10,4 +10,7 @@
     <color name="light">#EDEDED</color>
     <color name="orange_dark">#BC5D30</color>
     <color name="orange">#FF6F2B</color>
+    <color name="delete">#FF5A94</color>
+    <color name="edit">#FFC293</color>
+
 </resources>

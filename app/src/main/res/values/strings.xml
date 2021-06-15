@@ -17,4 +17,11 @@
     <string name="err_solution_harus_diisi">Solusi harus di isi!</string>
     <string name="success_write">Berhasil menambahkan data</string>
     <string name="err_write">Gagal menambahkan data</string>
+    <string name="profile_name">Dwiky Aprian Ashari</string>
+    <string name="macet">Macet</string>
+    <string name="jl_sudirman">Jl. Sudirman</string>
+    <string name="your_solution">Your Solution</string>
+    <string name="jenis_kemacetan_detail">Jenis Kemacetan : Macet Sedang</string>
+    <string name="tvsolution">Solution</string>
+    <string name="junior_mobile_developer">Junior Mobile Developer</string>
 </resources>
