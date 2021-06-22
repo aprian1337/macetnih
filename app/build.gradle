@@ -55,12 +55,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
-    // Import the Firebase BoM
     implementation platform('com.google.firebase:firebase-bom:28.0.1')
 
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-
-    // Declare the dependency for the Firebase SDK for Google Analytics
     implementation 'com.google.firebase:firebase-analytics-ktx'
 
     // Declare the dependencies for any other desired Firebase products
@@ -72,4 +68,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.5.0-native-mt'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    implementation 'com.itextpdf:itextg:5.5.10'
+    implementation 'com.karumi:dexter:6.2.2'
 }
