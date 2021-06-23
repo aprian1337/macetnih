@@ -11,7 +11,7 @@ import android.print.PrintDocumentInfo
 import android.util.Log
 import java.io.*
 
-class PDFDocumentAdapter(val context: Context, val path: String): PrintDocumentAdapter() {
+class PDFDocumentAdapter(val context: Context, val path: String) : PrintDocumentAdapter() {
     override fun onLayout(
         oldAttributes: PrintAttributes?,
         newAttributes: PrintAttributes?,
@@ -19,22 +19,15 @@ class PDFDocumentAdapter(val context: Context, val path: String): PrintDocumentA
         callback: LayoutResultCallback?,
         extras: Bundle?
     ) {
-        if (cancellationSignal != null) {
-            if(cancellationSignal.isCanceled)
-                if (callback != null) {
-                    callback.onLayoutCancelled()
-                }
-            else{
-                val builder = PrintDocumentInfo.Builder("file name")
-                builder.setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
-                    .setPageCount(PrintDocumentInfo.PAGE_COUNT_UNKNOWN)
-                    .build()
-                if (callback != null) {
-                    callback.onLayoutFinished(builder.build(), newAttributes != oldAttributes)
-                }
-            }
+        if (cancellationSignal!!.isCanceled) {
+            callback!!.onLayoutCancelled()
+        } else {
+            val builder = PrintDocumentInfo.Builder("file name")
+            builder.setContentType(PrintDocumentInfo.CONTENT_TYPE_DOCUMENT)
+                .setPageCount(PrintDocumentInfo.PAGE_COUNT_UNKNOWN)
+                .build()
+            callback!!.onLayoutFinished(builder.build(), newAttributes != oldAttributes)
         }
-
     }
 
     override fun onWrite(
@@ -43,33 +36,30 @@ class PDFDocumentAdapter(val context: Context, val path: String): PrintDocumentA
         cancellationSignal: CancellationSignal?,
         callback: WriteResultCallback?
     ) {
-        var `in` : InputStream? = null
-        var out : OutputStream? = null
+        var `in`: InputStream? = null
+        var out: OutputStream? = null
         try {
-            val file =  File(path)
+            val file = File(path)
             `in` = FileInputStream(file)
             if (destination != null) {
                 out = FileOutputStream(destination.fileDescriptor)
             }
 
-            if(!cancellationSignal!!.isCanceled){
+            if (!cancellationSignal!!.isCanceled) {
                 if (out != null) {
                     `in`.copyTo(out)
                 }
                 callback!!.onWriteFinished(arrayOf(PageRange.ALL_PAGES))
-            }
-            else
+            } else
                 callback!!.onWriteCancelled()
-        }catch (e: Exception){
-            if (callback != null) {
-                callback.onWriteFailed(e.message)
-            }
+        } catch (e: Exception) {
+            callback?.onWriteFailed(e.message)
             Log.e("ERR", e.message.toString())
-        }finally {
-            try{
+        } finally {
+            try {
                 `in`!!.close()
                 out!!.close()
-            }catch (e: IOException){
+            } catch (e: IOException) {
                 Log.e("ERR", e.message.toString())
             }
         }

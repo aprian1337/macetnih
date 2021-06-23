@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.print.PrintAttributes
 import android.print.PrintManager
@@ -17,7 +18,6 @@ import com.itextpdf.text.*
 import com.itextpdf.text.pdf.BaseFont
 import com.itextpdf.text.pdf.PdfWriter
 import com.itextpdf.text.pdf.draw.LineSeparator
-import com.itextpdf.text.pdf.draw.VerticalPositionMark
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.PermissionToken
 import com.karumi.dexter.listener.PermissionDeniedResponse
@@ -39,7 +39,8 @@ class DetailActivity : AppCompatActivity() {
         const val EXTRA_DETAIL = "extra_detail"
     }
 
-    val file_name : String = "print.pdf"
+    val fileName: String = "print.pdf"
+    private lateinit var macet: Macet
 
     private lateinit var binding: ActivityDetailBinding
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -49,36 +50,13 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
         fetchData()
-
-        Dexter.withContext(this)
-            .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            .withListener(object : PermissionListener{
-                override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
-                    binding.fab.setOnClickListener{
-                        createPDFFile(Common.getAppPath(this@DetailActivity)+file_name)
-                    }
-                }
-
-                override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
-                    TODO("Not yet implemented")
-                }
-
-                override fun onPermissionRationaleShouldBeShown(
-                    p0: PermissionRequest?,
-                    p1: PermissionToken?
-                ) {
-                    TODO("Not yet implemented")
-                }
-
-            })
-            .check()
     }
 
     private fun createPDFFile(path: String) {
         Log.d("PATH", path)
-        if(File(path).exists())
+        if (File(path).exists())
             File(path).delete()
-        try{
+        try {
             val document = Document()
             PdfWriter.getInstance(document, FileOutputStream(path))
             document.open()
@@ -87,39 +65,36 @@ class DetailActivity : AppCompatActivity() {
             document.addAuthor("Macetnih")
             document.addCreator("Lia")
 
-            val colorAccent = BaseColor(0,153,204,255)
+            val colorAccent = BaseColor(255, 111, 43, 255)
             val headingFontSize = 20.0f
             val valueFontSize = 26.0f
-            val fontName = BaseFont.createFont("assets/fonts/brandonmedium.otf", "UTF-8", BaseFont.EMBEDDED)
+            val fontName =
+                BaseFont.createFont("assets/fonts/brandonmedium.otf", "UTF-8", BaseFont.EMBEDDED)
+            val fontNameBold =
+                BaseFont.createFont("assets/fonts/brandonbold.otf", "UTF-8", BaseFont.EMBEDDED)
 
-            val titleStyle = Font(fontName, 36.0f, Font.NORMAL, BaseColor.BLACK)
-            addNewItem(document, "Order Details", Element.ALIGN_CENTER, titleStyle)
+            val titleStyle = Font(fontNameBold, 36.0f, Font.NORMAL, BaseColor.BLACK)
+            addNewItem(document, "MacetNih Detail", Element.ALIGN_LEFT, titleStyle)
 
             val headingStyle = Font(fontName, headingFontSize, Font.NORMAL, colorAccent)
-            addNewItem(document, "Order No: ", Element.ALIGN_LEFT, headingStyle)
+            addNewItem(document, "Street Name: ", Element.ALIGN_LEFT, headingStyle)
 
             val valueStyle = Font(fontName, valueFontSize, Font.NORMAL, BaseColor.BLACK)
-            addNewItem(document, "#123131", Element.ALIGN_LEFT, valueStyle)
+            addNewItem(document, macet.street!!, Element.ALIGN_LEFT, valueStyle)
 
             addLineSeparator(document)
-            addNewItem(document, "Order Date: ", Element.ALIGN_LEFT, headingStyle)
-            addNewItem(document, "03/07/2019", Element.ALIGN_LEFT, valueStyle)
+            addNewItem(document, "Jenis Kemacetan: ", Element.ALIGN_LEFT, headingStyle)
+            addNewItem(document, macet.status!!, Element.ALIGN_LEFT, valueStyle)
 
             addLineSeparator(document)
-            addNewItem(document, "Account Name: ", Element.ALIGN_LEFT, headingStyle)
-            addNewItem(document, "User", Element.ALIGN_LEFT, valueStyle)
+            addNewItem(document, "Solution: ", Element.ALIGN_LEFT, headingStyle)
+            addNewItem(document, macet.solution!!, Element.ALIGN_LEFT, valueStyle)
             addLineSeparator(document)
-            addLineSpace(document)
-            addNewItemWithLeftAndRight(document, "Pizza", "(0.0%)", titleStyle, valueStyle)
-            addNewItemWithLeftAndRight(document, "Pizza", "(0.0%)", titleStyle, valueStyle)
-            addLineSpace(document)
-            addLineSeparator(document)
-            addLineSpace(document)
             addLineSpace(document)
             document.close()
-            Toast.makeText(this@DetailActivity, "SUCCESS!", Toast.LENGTH_LONG).show()
+            Toast.makeText(this@DetailActivity, "Ready to print!", Toast.LENGTH_LONG).show()
             printPDF()
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("ERRP", e.message.toString())
         }
 
@@ -127,27 +102,20 @@ class DetailActivity : AppCompatActivity() {
 
     private fun printPDF() {
         val printManager = getSystemService(Context.PRINT_SERVICE) as PrintManager
-        try{
-            val printAdapter = PDFDocumentAdapter(this@DetailActivity, Common.getAppPath(this@DetailActivity)+file_name)
+        try {
+            val printAdapter = PDFDocumentAdapter(
+                this@DetailActivity,
+                Common.getAppPath(this@DetailActivity) + fileName
+            )
             printManager.print("Document", printAdapter, PrintAttributes.Builder().build())
-        }catch (e: Exception){
+        } catch (e: Exception) {
             Log.e("ERR", e.message.toString())
         }
     }
 
-    @Throws(DocumentException::class)
-    private fun addNewItemWithLeftAndRight(document: Document, textLeft: String, textRight: String, leftStyle: Font, rightStyle: Font) {
-        val chunkTextLeft = Chunk(textLeft, leftStyle)
-        val chunkTextRight = Chunk(textRight, rightStyle)
-        val p = Paragraph(chunkTextLeft)
-        p.add(Chunk(VerticalPositionMark()))
-        p.add(chunkTextRight)
-        document.add(p)
-    }
-
     private fun addLineSeparator(document: Document) {
         val lineSeparator = LineSeparator()
-        lineSeparator.lineColor = BaseColor(0,0,0,80)
+        lineSeparator.lineColor = BaseColor(0, 0, 0, 80)
         addLineSpace(document)
         document.add(Chunk(lineSeparator))
         addLineSpace(document)
@@ -158,10 +126,10 @@ class DetailActivity : AppCompatActivity() {
     }
 
     @Throws(DocumentException::class)
-    private fun addNewItem(document: Document, text: String, alignCenter: Int, style: Font) {
-        val chunk = Chunk(text,style)
+    private fun addNewItem(document: Document, text: String, align: Int, style: Font) {
+        val chunk = Chunk(text, style)
         val p = Paragraph(chunk)
-        p.alignment = alignCenter
+        p.alignment = align
         document.add(p)
     }
 
@@ -203,16 +171,50 @@ class DetailActivity : AppCompatActivity() {
                         this.btnDelete.setOnClickListener {
                             showDialogDel(id)
                         }
+                        macet = Macet(
+                            id,
+                            document.data?.get("street").toString(),
+                            document.data?.get("status").toString(),
+                            document.data?.get("solution").toString()
+                        )
                         this.btnEdit.setOnClickListener {
-                            val macet = Macet(
-                                id,
-                                document.data?.get("street").toString(),
-                                document.data?.get("status").toString(),
-                                document.data?.get("solution").toString(),
-                            )
                             Intent(this@DetailActivity, EditActivity::class.java).apply {
                                 putExtra(EditActivity.EXTRA_MACET, macet)
                                 startActivity(this)
+                            }
+                        }
+                        this.fab.setOnClickListener {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                Toast.makeText(
+                                    this@DetailActivity,
+                                    "Maaf, untuk saat ini fitur cetak hanya dapat berjalan pada Android 9 atau dibawahnya :(",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            } else {
+                                Dexter.withContext(this@DetailActivity)
+                                    .withPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                                    .withListener(object : PermissionListener {
+                                        override fun onPermissionGranted(p0: PermissionGrantedResponse?) {
+                                            createPDFFile(Common.getAppPath(this@DetailActivity) + fileName)
+                                        }
+
+                                        override fun onPermissionDenied(p0: PermissionDeniedResponse?) {
+                                            Toast.makeText(
+                                                this@DetailActivity,
+                                                "Permission denied!",
+                                                Toast.LENGTH_LONG
+                                            ).show()
+                                        }
+
+                                        override fun onPermissionRationaleShouldBeShown(
+                                            p0: PermissionRequest?,
+                                            p1: PermissionToken?
+                                        ) {
+                                            TODO("Not yet implemented")
+                                        }
+
+                                    })
+                                    .check()
                             }
                         }
                     }
